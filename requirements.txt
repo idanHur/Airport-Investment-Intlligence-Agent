@@ -1,0 +1,9 @@
+pandas
+pyarrow
+requests
+openpyxl
+python-dotenv
+langgraph
+langchain-openai
+streamlit
+pytest
