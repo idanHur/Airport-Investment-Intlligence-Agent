@@ -9,10 +9,10 @@ BASELINE_YEAR = 2019
 YEARS = [2019, 2022, 2023, 2024, 2025]
 
 # On-Time files are ~30 MB/month and take ~1 min each, so we sample one month per
-# season. Delay rates are therefore estimates, not full-year figures (see DESIGN.md).
+# season. Delay rates are therefore estimates, not full-year figures (see README.md).
 ONTIME_MONTHS = [1, 4, 7, 10]
 
-# A segment this long or longer counts as "long haul" (documented in docs/DESIGN.md).
+# A segment this long or longer counts as "long haul" (documented in README.md).
 LONG_HAUL_MILES = 3000
 
 # Airports below this many passenger departures a year are not ranked: tiny airports
@@ -23,7 +23,7 @@ MIN_DEPARTURES = 5000
 EXPANSION_WEIGHTS = {"load_factor": 40, "momentum": 40, "seat_growth": 20}
 
 # Load-factor gate: below this, planes are mostly empty, so strong growth cannot make
-# an airport an expansion candidate (it is scored but not ranked). See DESIGN.md.
+# an airport an expansion candidate (it is scored but not ranked). See README.md.
 MIN_LOAD_FACTOR = 0.60
 
 # Warning-flag thresholds (flags explain results; they never change a score).
