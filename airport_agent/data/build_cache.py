@@ -1,6 +1,6 @@
 """Download and cache all data. Run: .venv\\Scripts\\python -m airport_agent.data.build_cache"""
 from airport_agent.config import ONTIME_MONTHS, YEARS
-from airport_agent.data import bts_ontime, bts_t100
+from airport_agent.data import airports, bts_ontime, bts_t100, faa_enplanements, socrata_international
 
 
 def build_t100():
@@ -25,9 +25,19 @@ def build_ontime():
             print(f"On-Time {year}-{month:02d}: {len(frame)} airports")
 
 
+def build_reference():
+    airports.load()
+    print("Airports (OurAirports): cached")
+    for year in YEARS:
+        faa = faa_enplanements.load_year(year)
+        intl = socrata_international.load_year(year)
+        print(f"FAA {year}: {len(faa)} airports; Socrata international {year}: {len(intl)} airports")
+
+
 def main():
     build_t100()
     build_ontime()
+    build_reference()
 
 
 if __name__ == "__main__":
