@@ -32,3 +32,4 @@ EXTREME_GROWTH_VS_BASELINE = 3.0     # >3x 2019 traffic usually means new servic
 EXTREME_SEAT_GROWTH = 0.5            # +50% seats in a year is a step change, not a trend
 
 OPENAI_MODEL = "gpt-4o-mini"
+TRANSCRIBE_MODEL = "gpt-4o-mini-transcribe"  # speech-to-text for voice input

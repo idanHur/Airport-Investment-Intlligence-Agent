@@ -18,7 +18,7 @@ copy .env.example .env   # then put your OPENAI_API_KEY in .env
 .\.venv\Scripts\python -m airport_agent.data.build_cache   # one-time: downloads and caches all data (about 25 min the first time)
 .\.venv\Scripts\streamlit run app.py                       # chat UI
 .\.venv\Scripts\python -m airport_agent.agent              # or: terminal chat
-.\.venv\Scripts\python -m pytest                           # 30 tests, no network or LLM needed
+.\.venv\Scripts\python -m pytest                           # 33 tests, no network or LLM needed
 ```
 
 Questions it handles (the sidebar has them as one-click examples):
@@ -28,7 +28,7 @@ Questions it handles (the sidebar has them as one-click examples):
 - What is the percentage of long haul flights out of Anchorage airport?
 - What is the unmet flight demand in SFO airport and why?
 
-Follow-ups work ("and how does Boston compare to Providence?", "what if I count 2,500 miles as long haul?").
+You can also ask by voice with the microphone button inside the chat box: the recording is transcribed to text and sent through the same agent as a typed question. Follow-ups work ("and how does Boston compare to Providence?", "what if I count 2,500 miles as long haul?").
 
 ---
 
@@ -172,8 +172,9 @@ There is no free data on passengers turned away, so this looks for the symptoms:
 - **Ambiguous places:** "LA" is resolved to LAX. BUR, LGB and ONT are available on request (there is also a "los angeles area" region).
 - **Foreign origins** are excluded from airport metrics (only US origin airports are analysed).
 - **In-memory conversation memory** is lost when the server restarts.
-- **LLM behavior is not covered by automated tests.** The 30 tests cover everything except the model's wording. We checked the four assignment questions and follow-ups by hand.
+- **LLM behavior is not covered by automated tests.** The 33 tests cover everything except the model's wording. We checked the four assignment questions and follow-ups by hand.
 - **International totals** differ by 1 to 4% between T-100 and Socrata in 2024 (see above).
+- **Voice is input only**: answers are not read aloud. Transcription (OpenAI `gpt-4o-mini-transcribe`) can mishear names, so the transcript is shown as your message and a vocabulary hint of airport codes is sent with each recording. The transcription call is tested with a fake client and a real text-to-speech round trip; the microphone click itself was not tested.
 
 ---
 

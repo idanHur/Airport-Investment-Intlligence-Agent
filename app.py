@@ -6,6 +6,7 @@ import streamlit as st
 
 from airport_agent.agent.graph import ask_with_trace, build_agent
 from airport_agent.agent.queries import coverage
+from airport_agent.voice import transcribe
 
 EXAMPLES = [
     "Which airports in New England are strong candidates for terminal expansion?",
@@ -68,7 +69,17 @@ for turn in st.session_state.history:
                     st.markdown(f"**{call['name']}** `{json.dumps(call['args'])}`")
                     st.code(call["result"], language="json")
 
-question = st.chat_input("Ask about US airports...") or st.session_state.pop("pending", None)
+submission = st.chat_input("Ask about US airports, type or use the microphone...", accept_audio=True)
+question = st.session_state.pop("pending", None)
+if submission:  # a ChatInputValue: .text for typed text, .audio for a recording; None on reruns with no submission
+    parts = [submission.text] if submission.text else []
+    if submission.audio:
+        try:
+            with st.spinner("Transcribing..."):
+                parts.insert(0, transcribe(submission.audio.getvalue()))
+        except RuntimeError as error:
+            st.error(str(error))
+    question = " ".join(parts) or question
 if question:
     st.session_state.history.append({"role": "user", "content": question})
     with st.chat_message("user"):
