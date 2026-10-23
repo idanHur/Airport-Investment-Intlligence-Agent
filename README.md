@@ -10,6 +10,14 @@ py -m venv .venv
 copy .env.example .env   # then put your OPENAI_API_KEY in .env
 ```
 
+## Run
+
+```powershell
+.\.venv\Scripts\python -m airport_agent.data.build_cache   # one-time: downloads and caches all data (slow on first run)
+.\.venv\Scripts\streamlit run app.py                       # chat UI
+.\.venv\Scripts\python -m airport_agent.agent              # or: terminal chat
+```
+
 ## Tests
 
 ```powershell

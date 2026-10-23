@@ -62,7 +62,20 @@ def build_agent():
     return graph.compile(checkpointer=InMemorySaver())
 
 
-def ask(agent, question: str, thread_id: str = "default") -> str:
-    """Send one user message; the checkpointer supplies earlier turns for this thread."""
+def ask_with_trace(agent, question: str, thread_id: str = "default") -> tuple[str, list[dict]]:
+    """Send one user message; the checkpointer supplies earlier turns for this thread.
+    Returns the answer and the tool calls made for THIS question (name, args, result)."""
     result = agent.invoke({"messages": [("user", question)]}, config={"configurable": {"thread_id": thread_id}})
-    return result["messages"][-1].content
+    messages = result["messages"]
+    start = max(i for i, m in enumerate(messages) if m.type == "human")  # this turn begins at the last user message
+    results = {m.tool_call_id: m.content for m in messages[start:] if m.type == "tool"}
+    trace = [
+        {"name": call["name"], "args": call["args"], "result": results.get(call["id"])}
+        for m in messages[start:] if m.type == "ai"
+        for call in m.tool_calls
+    ]
+    return messages[-1].content, trace
+
+
+def ask(agent, question: str, thread_id: str = "default") -> str:
+    return ask_with_trace(agent, question, thread_id)[0]
