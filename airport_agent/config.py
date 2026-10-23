@@ -22,4 +22,13 @@ MIN_DEPARTURES = 5000
 # Expansion-candidate score weights (sum to 100). Each component is a 0-100 percentile.
 EXPANSION_WEIGHTS = {"load_factor": 40, "momentum": 40, "seat_growth": 20}
 
+# Load-factor gate: below this, planes are mostly empty, so strong growth cannot make
+# an airport an expansion candidate (it is scored but not ranked). See DESIGN.md.
+MIN_LOAD_FACTOR = 0.60
+
+# Warning-flag thresholds (flags explain results; they never change a score).
+SMALL_AIRPORT_PASSENGERS = 250_000   # tiny base: ratios are noisy
+EXTREME_GROWTH_VS_BASELINE = 3.0     # >3x 2019 traffic usually means new service, not trend
+EXTREME_SEAT_GROWTH = 0.5            # +50% seats in a year is a step change, not a trend
+
 OPENAI_MODEL = "gpt-4o-mini"

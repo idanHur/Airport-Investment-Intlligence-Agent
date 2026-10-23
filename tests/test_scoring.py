@@ -43,6 +43,26 @@ def test_expansion_ranking_and_exact_score():
     assert result.loc["A", "rank"] == 1
 
 
+def test_low_load_factor_is_scored_but_not_ranked_and_flagged():
+    metrics = _metrics()
+    metrics.loc[metrics.airport == "A", "load_factor"] = 0.40   # A has the best growth but empty planes
+    metrics["passengers"] = 5_000_000
+    result = expansion_scores(metrics, 2024)
+    assert result.index.tolist() == ["B", "C", "A"]              # gated airport sorts last
+    assert pd.isna(result.loc["A", "rank"]) and result.loc["B", "rank"] == 1
+    assert result.loc["A", "gated"] and result.loc["A", "score"] > 0
+    assert any("gate" in flag for flag in result.loc["A", "flags"])
+    assert result.iloc[0]["ranked_airports"] == 2
+
+
+def test_warning_flags_for_small_and_extreme_growth_airports():
+    metrics = _metrics()
+    metrics["passengers"] = 5_000_000
+    metrics.loc[metrics.airport == "A", ["passengers", "passengers_vs_2019", "seats_yoy"]] = [100_000, 4.0, 0.6]
+    flags = " | ".join(expansion_scores(metrics, 2024).loc["A", "flags"])
+    assert "Small airport" in flags and "4.0x its 2019" in flags and "Seats grew 60%" in flags
+
+
 def test_weights_change_the_score():
     only_load_factor = expansion_scores(_metrics(), 2024, weights={"load_factor": 1, "momentum": 0, "seat_growth": 0})
     assert only_load_factor.loc["B", "score"] == pytest.approx(200 / 3)
