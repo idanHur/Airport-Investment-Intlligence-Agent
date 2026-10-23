@@ -15,4 +15,11 @@ ONTIME_MONTHS = [1, 4, 7, 10]
 # A segment this long or longer counts as "long haul" (documented in docs/DESIGN.md).
 LONG_HAUL_MILES = 3000
 
+# Airports below this many passenger departures a year are not ranked: tiny airports
+# have noisy ratios and would dominate the extremes of every percentile.
+MIN_DEPARTURES = 5000
+
+# Expansion-candidate score weights (sum to 100). Each component is a 0-100 percentile.
+EXPANSION_WEIGHTS = {"load_factor": 40, "momentum": 40, "seat_growth": 20}
+
 OPENAI_MODEL = "gpt-4o-mini"
