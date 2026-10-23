@@ -16,17 +16,18 @@ from airport_agent.data import airports, bts_ontime, bts_t100, faa_enplanements
 PASSENGER_CLASSES = ["F", "L"]
 
 
-def t100_airport_year(t100: pd.DataFrame) -> pd.DataFrame:
-    """T-100 segments -> traffic and capacity metrics per US origin airport per year."""
+def t100_airport_year(t100: pd.DataFrame, long_haul_miles: float = LONG_HAUL_MILES) -> pd.DataFrame:
+    """T-100 segments -> traffic and capacity metrics per US origin airport per year.
+    `long_haul_miles` defaults to the project threshold; the agent can vary it to show sensitivity."""
     flights = t100[
         t100["CLASS"].isin(PASSENGER_CLASSES)
         & (t100["ORIGIN_COUNTRY"] == "US")
         & (t100["DEPARTURES_PERFORMED"] > 0)
     ].copy()
     flights["miles_flown"] = flights["DISTANCE"] * flights["DEPARTURES_PERFORMED"]
-    flights["long_haul_departures"] = flights["DEPARTURES_PERFORMED"].where(flights["DISTANCE"] >= LONG_HAUL_MILES, 0)
+    flights["long_haul_departures"] = flights["DEPARTURES_PERFORMED"].where(flights["DISTANCE"] >= long_haul_miles, 0)
     flights["intl_departures"] = flights["DEPARTURES_PERFORMED"].where(flights["DEST_COUNTRY"] != "US", 0)
-    flights["long_haul_passengers"] = flights["PASSENGERS"].where(flights["DISTANCE"] >= LONG_HAUL_MILES, 0)
+    flights["long_haul_passengers"] = flights["PASSENGERS"].where(flights["DISTANCE"] >= long_haul_miles, 0)
 
     totals = flights.groupby(["ORIGIN", "YEAR"]).agg(
         departures=("DEPARTURES_PERFORMED", "sum"),
